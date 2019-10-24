@@ -1,0 +1,31 @@
+<form>
+  <div class="form-group">
+    <label for="movieInput">Movie Search</label>
+    <input type="text" class="form-control" id="movieInput" placeholder="Enter Movie Here">
+  </div>
+  <div class="form-group">
+    <label for="parks">Park Name</label>
+    <input type="text" class="form-control" id="parks" placeholder="Enter Park Name">
+
+  </div>
+  <div class="form-group">
+    <label for="daysofWeek">Days</label>
+    <select class="form-control" id="daysofWeek" aria-describedby="multiSelectHelp" multiple>
+      <option>Sunday</option>
+      <option>Monday</option>
+      <option>Tuesday</option>
+      <option>Wednesday</option>
+      <option>Thursday</option>
+      <option>Friday</option>
+      <option>Saturday</option>
+    </select>
+    <small id="multiSelectHelp" class="form-text text-muted">Hold Ctrl while selecting on Windows and Cmd when Selecting on MacOS, Nothing I can do about this.</small>
+  </div>
+  <div class="form-check">
+    <input class="form-check-input" type="checkbox" value="" id="future" checked>
+    <label class="form-check-label" for="future">Upcoming Movies Only</label>
+  </div>
+  <button type="submit" class="btn btn-primary">
+    Submit Query
+  </button>
+</form>
