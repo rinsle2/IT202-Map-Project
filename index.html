@@ -61,7 +61,8 @@
 
   <script>
     $(document).ready(function() {
-      var database = "https://data.cityofchicago.org/resource/7piw-z6r6.json"
+      var database = "https://data.cityofchicago.org/resource/7piw-z6r6.json?$select=day,park,title,rating,location"
+      let d = new Date()
       function hideScreens() {
         $(".content").hide()
       }
@@ -76,8 +77,41 @@
       var park = document.getElementById("parks")
       var day = document.getElementById("daysofWeek")
       var fut = document.getElementById("future")
-      
-        
+      if(fut.checkValidity()) {
+        database = database + " where=date>=" + "'" + d.toISOString().split("Z")[0] + "'"
+      }
+      if(mov.checkValidity()) {
+        if(!database.contains("where=")) {
+          database += " where="
+        }
+        else {
+          database += " AND "
+        }
+        database += "title=" +"'" + mov.value +"'"
+      }
+      if(park.checkValidity()) {
+        if(!database.contains("where=")) {
+          database += " where="
+        }
+        else {
+          database += " AND "
+        }
+        database += "park='" + park.value + "'"
+      }
+        if(day.checkValidity()) {
+        if(!database.contains("where=")) {
+          database += "where="
+        }
+        else {
+          database += " AND "
+        }
+        database += "day in ('" + day.value.substring(0,3) + "')"
+      }
+      $.get(database, function(ret) {
+        $.each(ret, function(i, v) {
+          $(".content#list").addClass()
+        })
+})
       })
     })
   </script>
