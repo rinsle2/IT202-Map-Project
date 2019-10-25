@@ -44,7 +44,6 @@
 
   <!-- the content divs -->
   <div class="content" id="about">
-    Home page
   </div>
   <div class="content" id="form">
   </div>
@@ -62,10 +61,7 @@
 
   <script>
     $(document).ready(function() {
-      var mov = document.getElementById("movieInput");
-      var park = document.getElementById("parks");
-      var mov = document.getElementById("movieInput");
-      var mov = document.getElementById("movieInput");
+      var database = "https://data.cityofchicago.org/resource/7piw-z6r6.json"
       function hideScreens() {
         $(".content").hide()
       }
@@ -76,6 +72,11 @@
         $(target).load("pages/" + target.replace("#", "") + ".html")
       })
       $(".btn btn-primary").on("click", function() {
+      var mov = document.getElementById("movieInput")
+      var park = document.getElementById("parks")
+      var day = document.getElementById("daysofWeek")
+      var fut = document.getElementById("future")
+      
         
       })
     })
