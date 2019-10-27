@@ -44,13 +44,48 @@
 
   <!-- the content divs -->
   <div class="content" id="about">
+    About
   </div>
   <div class="content" id="form">
+    <form>
+      <div class="form-group">
+        <label for="movieInput">Movie Search</label>
+        <input type="text" class="form-control" id="movieInput" placeholder="Enter Movie Here">
+      </div>
+      <div class="form-group">
+        <label for="parks">Park Name</label>
+        <input type="text" class="form-control" id="parks" placeholder="Enter Park Name">
+
+      </div>
+      <div class="form-group">
+        <label for="daysofWeek">Days</label>
+        <select class="form-control" id="daysofWeek" aria-describedby="multiSelectHelp" multiple>
+          <option>Sunday</option>
+          <option>Monday</option>
+          <option>Tuesday</option>
+          <option>Wednesday</option>
+          <option>Thursday</option>
+          <option>Friday</option>
+          <option>Saturday</option>
+        </select>
+        <small id="multiSelectHelp" class="form-text text-muted">
+      Hold Ctrl while selecting multiple values on Windows and Cmd while selecting multiple values on MacOS, Nothing I can do about this.
+    </small>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="future" checked>
+        <label class="form-check-label" for="future">Upcoming Movies Only</label>
+      </div>
+      <button type="submit" class="btn btn-primary">
+        Submit Query
+      </button>
+    </form>
   </div>
   <div class="content" id="list">
+    <ul class="list-group">
+    </ul>
   </div>
   <div class="content" id="map">
-    About
   </div>
 
 
@@ -61,8 +96,13 @@
 
   <script>
     $(document).ready(function() {
-      var database = "https://data.cityofchicago.org/resource/7piw-z6r6.json?$select=day,park,title,rating,location"
+      var database = "https://data.cityofchicago.org/resource/7piw-z6r6.json?$query=SELECT%20day,date,park,park_phone,title,rating,cc,location,park_address"
+      let htm = '<li class="list-group-item">'
+      htm += '<h5 class="mb-1" id="movName"></h5>'
+      htm += '<p class="mb-1" id="otherStuff"></p>'
+      htm += '</li>'
       let d = new Date()
+
       function hideScreens() {
         $(".content").hide()
       }
@@ -70,48 +110,66 @@
         hideScreens()
         var target = $(this).attr("href");
         $(target).show()
-        $(target).load("pages/" + target.replace("#", "") + ".html")
       })
-      $(".btn btn-primary").on("click", function() {
-      var mov = document.getElementById("movieInput")
-      var park = document.getElementById("parks")
-      var day = document.getElementById("daysofWeek")
-      var fut = document.getElementById("future")
-      if(fut.checkValidity()) {
-        database = database + " where=date>=" + "'" + d.toISOString().split("Z")[0] + "'"
-      }
-      if(mov.checkValidity()) {
-        if(!database.contains("where=")) {
-          database += " where="
+      $(".btn").on("click", function() {
+        $(".list-group").empty()
+        var mov = document.getElementById("movieInput").value
+        mov = mov.replace(" ", "%20")
+        var park = document.getElementById("parks").value
+        park = park.replace(" ", "%20")
+        var day = $("#daysofWeek").val() || []
+        var fut = $("#future").val()
+        if($("#future").is(":checked")) {
+          database = database + "%WHERE%20date>=" + "'" + d.toISOString().split("Z")[0] + "'"
         }
-        else {
-          database += " AND "
+        if(mov.length > 0) {
+          if(!database.includes("WHERE%20")) {
+            database += "%20WHERE%20"
+          } else {
+            database += "%20AND%20"
+          }
+          database += "title%20LIKE%20" + "'" + mov + "\'"
         }
-        database += "title=" +"'" + mov.value +"'"
-      }
-      if(park.checkValidity()) {
-        if(!database.contains("where=")) {
-          database += " where="
+        if(park.length > 0) {
+          if(!database.includes("WHERE%20")) {
+            database += "%20WHERE%20"
+          } else {
+            database += "%20AND%20"
+          }
+          database += "park='" + park + "\'"
         }
-        else {
-          database += " AND "
+        if(day.length > 0) {
+          if(!database.includes("WHERE%20")) {
+            database += "%20WHERE%20"
+          } else {
+            database += "%20AND%20"
+          }
+          
+          database += "day%20in%20("
+        for(var i=0;i<day.length;i++) {
+          if(i>0) {
+            database += ","
+          }
+          database += "'" 
+          database += day[i].substring(0, 3)
+          database += "\'"
         }
-        database += "park='" + park.value + "'"
-      }
-        if(day.checkValidity()) {
-        if(!database.contains("where=")) {
-          database += "where="
+          
+          database += ")"
         }
-        else {
-          database += " AND "
-        }
-        database += "day in ('" + day.value.substring(0,3) + "')"
-      }
-      $.get(database, function(ret) {
-        $.each(ret, function(i, v) {
-          $(".content#list").addClass()
+        $.get(database, function(res) {
+          console.log(res.length)
+          var allHtm = []
+          for (var i = 0;i<res.length;i++) {
+            htm = '<li class="list-group-item"> <h5 class="mb-1" id="movName'+i+'"></h5> <p class="mb-1" id="otherStuff'+i+'"></p> </li>'
+            allHtm[i] = htm
+          }
+          $.each(res, function(i,v) {
+            $(".list-group").append(allHtm[i]);
+            $("h5#movName"+i).text(res[i].title);
+            $("p#otherStuff"+i).text("Taking place in: " + res[i].park + " At " + res[i].park_address + " Contact number is " + res[i].park_phone + " With a rating of " + res[i].rating);
+          })
         })
-})
       })
     })
   </script>

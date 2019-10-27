@@ -1,0 +1,10 @@
+{
+  "name": "Map App",
+  "short_name": "Movie Park",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "navy",
+  "description": "An app to look up movies in parks",
+  "icons": [],
+  "related_applications": []
+}
