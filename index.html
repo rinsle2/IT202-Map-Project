@@ -13,6 +13,14 @@
       display: none;
       margin: 1em;
     }
+    #map {
+      height: 100%;
+    }
+    html, body {
+      height: 100%;
+      padding: 0;
+      margin: 0;
+    }
   </style>
 
 </head>
@@ -86,23 +94,28 @@
     </ul>
   </div>
   <div class="content" id="map">
+    <div id="map">
+    </div>
   </div>
 
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
-
-
-  <script>
+  <script>  
+      var map
+      function initMap() {
+        var chicago = {lat: 41.881832, lng: -87.623177};
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 4,
+          center: chicago
+        });
+      }
     $(document).ready(function() {
       var database = "https://data.cityofchicago.org/resource/7piw-z6r6.json?$query=SELECT%20day,date,park,park_phone,title,rating,cc,location,park_address"
-      let htm = '<li class="list-group-item">'
-      htm += '<h5 class="mb-1" id="movName"></h5>'
-      htm += '<p class="mb-1" id="otherStuff"></p>'
-      htm += '</li>'
       let d = new Date()
-
+      var markers = []
+      var infowindows = []
       function hideScreens() {
         $(".content").hide()
       }
@@ -158,22 +171,52 @@
           database += ")"
         }
         $.get(database, function(res) {
-          console.log(res.length)
           var allHtm = []
           for (var i = 0;i<res.length;i++) {
-            htm = '<li class="list-group-item"> <h5 class="mb-1" id="movName'+i+'"></h5> <p class="mb-1" id="otherStuff'+i+'"></p> </li>'
+            var htm = '<li class="list-group-item"> <h5 class="mb-1" id="movName'+i+'"></h5> <p class="mb-1" id="otherStuff'+i+'"></p> </li>'
             allHtm[i] = htm
           }
           $.each(res, function(i,v) {
-            $(".list-group").append(allHtm[i]);
-            $("h5#movName"+i).text(res[i].title);
-            $("p#otherStuff"+i).text("Taking place in: " + res[i].park + " At " + res[i].park_address + " Contact number is " + res[i].park_phone + " With a rating of " + res[i].rating);
+            $(".list-group").append(allHtm[i])
+            $("h5#movName"+i).text(v.title)
+            $("p#otherStuff"+i).text("Taking place in: " + v.park + " At: " + v.park_address + " Contact number is: " + v.park_phone + " With a rating of " + v.rating)
+            var loc = new google.maps.LatLng(v.location.latitude, v.location.longitude)
+            var contentString = '<div id="content>'+
+                '<h1 id="firstHeading" class="firstHeading">'+
+                v.title+
+                '</h1>'+
+                '<div id="bodyContent">'+
+                '<p><b>'+
+                v.title+
+                '</b> is being played at '+
+                v.park+
+                ' and has a rating of '+
+                v.rating+
+                ', you can contact the park through their phone number: '+
+                v.park_phone+
+                '</p>'+
+                +'</div>'
+
+        var infowindow = new google.maps.InfoWindow({
+          content: contentString
+        });
+        infowindows.push(infowindow)
+        var marker = new google.maps.Marker({
+          position: loc,
+          map: map,
+          title: v.title
+        });
+        marker.addListener('click', function() {
+          infowindow.open(map, marker)
+        })
+        markers.push(marker)
           })
         })
       })
     })
   </script>
 
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAd9dTPShpJTPGiBHeQzZOsc09K-KiS-Hc&callback=initMap"></script>
 
 </body>
 
