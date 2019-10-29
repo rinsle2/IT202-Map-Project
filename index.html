@@ -27,7 +27,7 @@
 
 <body>
   <!-- navigation bar -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="#">Navbar</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -107,15 +107,14 @@
       function initMap() {
         var chicago = {lat: 41.881832, lng: -87.623177};
         map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 4,
+          zoom: 8,
           center: chicago
         });
       }
     $(document).ready(function() {
-      var database = "https://data.cityofchicago.org/resource/7piw-z6r6.json?$query=SELECT%20day,date,park,park_phone,title,rating,cc,location,park_address"
       let d = new Date()
-      var markers = []
-      var infowindows = []
+          var markers = [] 
+          var infowindows = []
       function hideScreens() {
         $(".content").hide()
       }
@@ -125,7 +124,13 @@
         $(target).show()
       })
       $(".btn").on("click", function() {
+      var database = "https://data.cityofchicago.org/resource/7piw-z6r6.json?$query=SELECT%20day,date,park,park_phone,title,rating,cc,location,park_address"
         $(".list-group").empty()
+          if(markers.length > 0) {
+            for(var i=0;i<markers.length;i++) {
+              markers[i].setMap(null)
+            }
+          }
         var mov = document.getElementById("movieInput").value
         mov = mov.replace(" ", "%20")
         var park = document.getElementById("parks").value
@@ -133,7 +138,7 @@
         var day = $("#daysofWeek").val() || []
         var fut = $("#future").val()
         if($("#future").is(":checked")) {
-          database = database + "%WHERE%20date>=" + "'" + d.toISOString().split("Z")[0] + "'"
+          database = database + "%20WHERE%20date>=" + "'" + d.toISOString().split("Z")[0] + "'"
         }
         if(mov.length > 0) {
           if(!database.includes("WHERE%20")) {
@@ -180,6 +185,9 @@
             $(".list-group").append(allHtm[i])
             $("h5#movName"+i).text(v.title)
             $("p#otherStuff"+i).text("Taking place in: " + v.park + " At: " + v.park_address + " Contact number is: " + v.park_phone + " With a rating of " + v.rating)
+            if(v.location == undefined) {
+              v.location = {latitude: 0.0, longitude: 0.0}
+            }
             var loc = new google.maps.LatLng(v.location.latitude, v.location.longitude)
             var contentString = '<div id="content>'+
                 '<h1 id="firstHeading" class="firstHeading">'+
@@ -195,7 +203,8 @@
                 ', you can contact the park through their phone number: '+
                 v.park_phone+
                 '</p>'+
-                +'</div>'
+                '</div>'+
+                '</div>'
 
         var infowindow = new google.maps.InfoWindow({
           content: contentString
