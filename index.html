@@ -2,10 +2,13 @@
 <html>
 
 <head>
+  <link rel="manifest" href="./manifest.json">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <title>Public Movie Lookup</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="icon" type="image/png" sizes="512x512" href="/favicon_1.ico">
 
 
   <style>
@@ -226,6 +229,18 @@
   </script>
 
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAd9dTPShpJTPGiBHeQzZOsc09K-KiS-Hc&callback=initMap"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+        .then(function(reg) {
+          // registration worked
+          console.log('Registration succeeded. Scope is ' + reg.scope);
+        }).catch(function(error) {
+          // registration failed
+          console.log('Registration failed with ' + error);
+        });
+      }
+    </script>
 
 </body>
 

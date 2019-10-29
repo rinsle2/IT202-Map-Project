@@ -5,6 +5,10 @@
   "display": "standalone",
   "background_color": "navy",
   "description": "An app to look up movies in parks",
-  "icons": [],
+  "icons": [{
+    "src": "./icon.png",
+    "sizes": "512x512",
+    "type": "image/png"
+  }],
   "related_applications": []
 }
